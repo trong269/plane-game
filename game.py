@@ -1,4 +1,4 @@
-import pygame , sys , random
+import pygame , sys , random ,os
 pygame.init()
 #cac ham 
 def create_rocket():
@@ -38,25 +38,26 @@ def check_die( bullet_list ):
 Screen = pygame.display.set_mode ( (938 ,780) )
 clock = pygame.time.Clock()
 # tao nen 
-bg = pygame.image.load(r"C:\workspace\Python\plane_game\.Images\Textures\stars_galaxy.jpg")
+bg = pygame.image.load(r"Images\Textures\stars_galaxy.jpg")
 # tao plane
-plane_surface = pygame.image.load( r"C:\workspace\Python\plane_game\.Images\Objects\ship2.png")
+plane_surface = pygame.image.load( r"Images\Objects\ship2.png")
 plane_rect = plane_surface.get_rect( midbottom = ( 450 , 750 ) )
 plane_movementx = 0 
 plane_movementy = 0 
 #tao rocket
-rocket_surface = pygame.image.load( r"C:\workspace\Python\plane_game\.Images\Objects\ship_blue.png")
+rocket_surface = pygame.image.load( r"Images\Objects\ship_blue.png")
 rocket_event = pygame.USEREVENT + 1
 pygame.time.set_timer( rocket_event , 1000 )
 rocket_list = []
 rocket_pos = [ 10 , 100 , 200 , 300 , 400 , 500 , 600 , 700 , 800 , 900 ]
 # tao bullet cho plane
-bullet_surface = pygame.image.load( r"C:\workspace\Python\plane_game\.Images\Objects\bullet4.png")
+bullet_surface = pygame.image.load( r"Images\Objects\bullet4.png")
 bullet_event = pygame.USEREVENT + 2
 pygame.time.set_timer( bullet_event , 200 )
 bullet_list = [ ]
 # check collision giua rocket va plane
 Active = True 
+
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
