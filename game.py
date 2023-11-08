@@ -9,6 +9,10 @@ def draw_rocket( rocket_list ):
     print( len(rocket_list) )
     for rocket in rocket_list:
         Screen.blit( rocket_surface , rocket )
+def score_display():
+        score_surface = game_font.render('Score',True,(255,255,255))
+        score_rect = score_surface.get_rect(center = (216,100))
+        screen.blit(score_surface,score_rect)
 def move_rocket( rocket_list ):
     for rocket_rect in rocket_list:
         if rocket_rect.centery <= 800:
@@ -109,6 +113,7 @@ while True:
         draw_rocket(rocket_list )
         headshot(bullet_list , rocket_list)
         Active = check_die( rocket_list )
+        score_display()
     
     pygame.display.update()
     clock.tick( 80 )
