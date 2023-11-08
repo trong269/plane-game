@@ -45,6 +45,8 @@ def headshot( bullet_list , rocket_list ):
 #set up
 Screen = pygame.display.set_mode ( (938 ,780) )
 clock = pygame.time.Clock()
+#tao font score
+plane_font=pygame.font.Font('04B_19.ttf',40)
 # tao nen 
 bg = pygame.image.load(r"Images\Textures\stars_galaxy.jpg")
 # tao plane
