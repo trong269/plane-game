@@ -9,6 +9,10 @@ def draw_rocket( rocket_list ):
     print( len(rocket_list) )
     for rocket in rocket_list:
         Screen.blit( rocket_surface , rocket )
+def score_display():
+        score_surface = game_font.render('Score',True,(255,255,255))
+        score_rect = score_surface.get_rect(center = (216,100))
+        Screen.blit(score_surface,score_rect)
 def move_rocket( rocket_list ):
     for rocket_rect in rocket_list:
         if rocket_rect.centery <= 800:
@@ -42,6 +46,8 @@ def headshot( bullet_list , rocket_list ):
 #set up
 Screen = pygame.display.set_mode ( (938 ,780) )
 clock = pygame.time.Clock()
+#tao font score
+plane_font=pygame.font.Font('freesansbold.ttf',40)
 # tao nen 
 bg = pygame.image.load(r"Images\Textures\stars_galaxy.jpg")
 # tao plane
@@ -114,9 +120,11 @@ while True:
         draw_rocket(rocket_list )
         headshot(bullet_list , rocket_list)
         Active = check_die( rocket_list )
+
         #score 
         player_text=game_font.render(f"{player_score}",True,(255, 0, 0),bullet_event)
         Screen.blit(player_text,(450,20))
+
 
     pygame.display.update()
     clock.tick( 80 )
