@@ -42,6 +42,7 @@ def headshot( bullet_list , rocket_list ):
             if bullet.colliderect( rocket ):
                 bullet_list.remove( bullet )
                 rocket_list.remove( rocket )
+                
 
 #set up
 Screen = pygame.display.set_mode ( (938 ,780) )
@@ -70,10 +71,16 @@ bullet_speed = 200
 bullet_event = pygame.USEREVENT + 3
 pygame.time.set_timer( bullet_event , bullet_speed )
 bullet_list = [ ]
-# check collision giua rocket va plane
-Active = True 
+
 player_score=0
 oppnen_score=0
+#score time
+score_time= None
+
+# check collision giua rocket va plane
+
+Active = True 
+
 game_font=pygame.font.Font("freesansbold.ttf",50)
 while True:
     for event in pygame.event.get():
@@ -102,11 +109,15 @@ while True:
             rocket_list.append( create_rocket() )
         if event.type == bullet_event:
             bullet_list.append( creat_bullet() )
+        if headshot == Screen:
+            player_score+=1
         
 
         if event.type == rocket_speed_event and rocket_speed >= 250 :
             rocket_speed -= 50
             pygame.time.set_timer( rocket_event , rocket_speed )
+            player_score+=1
+        
     Screen.blit( bg , ( 0 , 0 ) )
     if Active:
         #plane
@@ -124,7 +135,10 @@ while True:
         #score 
         player_text=game_font.render(f"{player_score}",True,(255, 0, 0),bullet_event)
         Screen.blit(player_text,(450,20))
-
+        #time
+        score_time=pygame.time.get_ticks()
+        if score_time:
+            bullet_event
 
     pygame.display.update()
     clock.tick( 80 )
