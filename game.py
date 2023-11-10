@@ -15,10 +15,6 @@ def create_rocket():
 def draw_rocket( rocket_list ):
     for rocket in rocket_list:
         Screen.blit( rocket_surface , rocket )
-def score_display():
-        score_surface = game_font.render('Score',True,(255,255,255))
-        score_rect = score_surface.get_rect(center = (216,100))
-        Screen.blit(score_surface,score_rect)
 def move_rocket( rocket_list ):
     for rocket_rect in rocket_list:
         if rocket_rect.centery <= height + 48 :
@@ -50,7 +46,6 @@ def headshoot( bullet_list , rocket_list ):
                 headshoot_sound.play()
                 bullet_list.remove( bullet )
                 rocket_list.remove( rocket )
-<<<<<<< HEAD
 def creat_star():
     star_wight = random.choice( range( 10 , 930 ) )
     star_rect = star_surface.get_rect( center = ( star_wight , 0 ) )
@@ -79,17 +74,11 @@ shoot_sound = pygame.mixer.Sound( r"C:\workspace\Python\plane-game\.Sounds\gunsh
 headshoot_sound = pygame.mixer.Sound( r"C:\workspace\Python\plane-game\.Sounds\explosion.wav" )
 die_sound = pygame.mixer.Sound(r"C:\workspace\Python\plane-game\.Sounds\bomb.wav")
 get_star_sound = pygame.mixer.Sound( r"C:\workspace\Python\plane-game\.Sounds\sound-effect-twinklesparkle-115095.mp3")
-=======
-                
-
->>>>>>> cbd8620dc36d69d6695f53fd09c8c5142626a60d
 #set up
 height = 800
 wight = 938
 Screen = pygame.display.set_mode ( (wight ,height) )
 clock = pygame.time.Clock()
-#tao font score
-plane_font=pygame.font.Font('freesansbold.ttf',40)
 # tao nen 
 bg = pygame.image.load(r"C:\workspace\Python\plane-game\Images\Textures\stars_galaxy.jpg")
 bg_pos = 0 
@@ -114,28 +103,13 @@ bullet_speed_max = 60
 bullet_event = pygame.USEREVENT + 3
 pygame.time.set_timer( bullet_event , bullet_speed )
 bullet_list = [ ]
-<<<<<<< HEAD
 # tao star
 star_surface = pygame.image.load ( r"C:\workspace\Python\plane-game\Images\Objects\star (1).png")
 star_list = []
 star_event = pygame.USEREVENT + 4 
 pygame.time.set_timer( star_event , 20000 )
-=======
-
-player_score=0
-oppnen_score=0
-#score time
-score_time= None
-
->>>>>>> cbd8620dc36d69d6695f53fd09c8c5142626a60d
 # check collision giua rocket va plane
-
 Active = True 
-<<<<<<< HEAD
-=======
-
-game_font=pygame.font.Font("freesansbold.ttf",50)
->>>>>>> cbd8620dc36d69d6695f53fd09c8c5142626a60d
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -173,7 +147,6 @@ while True:
         if event.type == bullet_event and Active :
             shoot_sound.play()
             bullet_list.append( creat_bullet() )
-<<<<<<< HEAD
         # sau mot khoang thoi gian se tang them so luong rocket
         if event.type == rocket_speed_event and rocket_speed >= 250 :
             rocket_speed -= 50
@@ -185,18 +158,6 @@ while True:
     bg_pos += 1 
     if bg_pos > 1668 :
         bg_pos = 0
-=======
-        if headshot == Screen:
-            player_score+=1
-        
-
-        if event.type == rocket_speed_event and rocket_speed >= 250 :
-            rocket_speed -= 50
-            pygame.time.set_timer( rocket_event , rocket_speed )
-            player_score+=1
-        
-    Screen.blit( bg , ( 0 , 0 ) )
->>>>>>> cbd8620dc36d69d6695f53fd09c8c5142626a60d
     if Active:
         #plane
         move_bullet( bullet_list )
@@ -224,20 +185,6 @@ while True:
             bullet_speed = bullet_speed_sample
             pygame.time.set_timer( bullet_event , bullet_speed )
         Active = check_die( rocket_list )
-<<<<<<< HEAD
         
     pygame.display.update()
     clock.tick( 120 )
-=======
-
-        #score 
-        player_text=game_font.render(f"{player_score}",True,(255, 0, 0),bullet_event)
-        Screen.blit(player_text,(450,20))
-        #time
-        score_time=pygame.time.get_ticks()
-        if score_time:
-            bullet_event
-
-    pygame.display.update()
-    clock.tick( 80 )
->>>>>>> cbd8620dc36d69d6695f53fd09c8c5142626a60d
