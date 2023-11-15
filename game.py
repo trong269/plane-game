@@ -40,9 +40,11 @@ def check_die( bullet_list ):
             return False
     return True
 def headshoot( bullet_list , rocket_list ):
+    global score
     for bullet in bullet_list :
         for rocket in rocket_list :
             if bullet.colliderect( rocket ):
+                score += 1
                 headshoot_sound.play()
                 bullet_list.remove( bullet )
                 rocket_list.remove( rocket )
@@ -67,6 +69,16 @@ def get_star(bullet_speed , star_list):
             if bullet_speed >= 90 :
                 bullet_speed -= 30
     return bullet_speed
+def drow_score1( ):
+    score_surface = game_font.render( str( score ) , True , ( 255 , 255 , 255 ) )
+    Screen.blit( score_surface , ( wight/2 , 20 ) )
+def drow_score2( ):
+    score_surface = game_font.render( "current score: " + str( score ) , True , (255,0,0) )
+    score_rect = score_surface.get_rect( center = ( wight/2 , height/ 2 + 100 ) )
+    max_score_surface = game_font.render( "High score: " + str( max_score ) , True , (255,0,0) )
+    max_score_rect = max_score_surface.get_rect( center = ( wight/2 , height/ 2 + 150 ) )
+    Screen.blit( score_surface , score_rect )
+    Screen.blit( max_score_surface , max_score_rect )
 # add sound 
 pygame.mixer.music.load( r"C:\workspace\Python\plane-game\.Sounds\Epic Hip Hop.mp3")
 pygame.mixer.music.play(-1 , 0 , 0 )
@@ -75,7 +87,7 @@ headshoot_sound = pygame.mixer.Sound( r"C:\workspace\Python\plane-game\.Sounds\e
 die_sound = pygame.mixer.Sound(r"C:\workspace\Python\plane-game\.Sounds\bomb.wav")
 get_star_sound = pygame.mixer.Sound( r"C:\workspace\Python\plane-game\.Sounds\sound-effect-twinklesparkle-115095.mp3")
 #set up
-height = 800
+height = 790
 wight = 938
 Screen = pygame.display.set_mode ( (wight ,height) )
 clock = pygame.time.Clock()
@@ -110,6 +122,13 @@ star_event = pygame.USEREVENT + 4
 pygame.time.set_timer( star_event , 20000 )
 # check collision giua rocket va plane
 Active = True 
+# tao score
+game_font = pygame.font.Font(r"C:\workspace\Python\plane-game\04B_19.TTF", 40)
+score = 0 
+max_score = 0 
+# game over
+geme_over_surface = pygame.image.load ( r"C:\workspace\Python\plane-game\Images\Textures\game_over_PNG41 (1).png")
+game_over_rect = geme_over_surface.get_rect( center = ( wight/2 , height/2 - 50 ) )
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -139,6 +158,8 @@ while True:
                 star_list.clear()
                 # reset lai vi tri cua may bay
                 plane_rect = plane_surface.get_rect( midbottom = ( 450 , 750 ) )
+                #reset score
+                score = 0 ; 
         if event.type == pygame.KEYUP:
             plane_movementx = 0 
             plane_movementy = 0 
@@ -185,6 +206,11 @@ while True:
             bullet_speed = bullet_speed_sample
             pygame.time.set_timer( bullet_event , bullet_speed )
         Active = check_die( rocket_list )
-        
+        # score
+        max_score = max( max_score , score )
+        drow_score1()
+    else :
+        Screen.blit( geme_over_surface , game_over_rect )
+        drow_score2()
     pygame.display.update()
     clock.tick( 120 )
