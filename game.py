@@ -2,7 +2,7 @@ import pygame , sys , random ,os
 pygame.mixer.pre_init(frequency=44100, size=-16, channels=2, buffer=512)
 pygame.init()
 pygame.display.set_caption( "Máy bay chiến đấu")
-icon = pygame.image.load( r"C:\workspace\Python\plane-game\Images\Objects\ship2.png" )
+icon = pygame.image.load( r".\Images\Objects\plane.png" )
 pygame.display.set_icon( icon )
 #cac ham
 def draw_bg():
@@ -18,7 +18,7 @@ def draw_rocket( rocket_list ):
 def move_rocket( rocket_list ):
     for rocket_rect in rocket_list:
         if rocket_rect.centery <= height + 48 :
-            rocket_rect.centery += 3
+            rocket_rect.centery += 4
         else:
             rocket_list.remove( rocket_rect)
 def creat_bullet():
@@ -80,27 +80,27 @@ def drow_score2( ):
     Screen.blit( score_surface , score_rect )
     Screen.blit( max_score_surface , max_score_rect )
 # add sound 
-pygame.mixer.music.load( r"C:\workspace\Python\plane-game\.Sounds\Epic Hip Hop.mp3")
+pygame.mixer.music.load( r".\.Sounds\Epic Hip Hop.mp3")
 pygame.mixer.music.play(-1 , 0 , 0 )
-shoot_sound = pygame.mixer.Sound( r"C:\workspace\Python\plane-game\.Sounds\gunshot.wav")
-headshoot_sound = pygame.mixer.Sound( r"C:\workspace\Python\plane-game\.Sounds\explosion.wav" )
-die_sound = pygame.mixer.Sound(r"C:\workspace\Python\plane-game\.Sounds\bomb.wav")
-get_star_sound = pygame.mixer.Sound( r"C:\workspace\Python\plane-game\.Sounds\sound-effect-twinklesparkle-115095.mp3")
+shoot_sound = pygame.mixer.Sound( r".\.Sounds\gunshot.wav")
+headshoot_sound = pygame.mixer.Sound( r".\.Sounds\explosion.wav" )
+die_sound = pygame.mixer.Sound(r".\.Sounds\bomb.wav")
+get_star_sound = pygame.mixer.Sound( r".\.Sounds\sound-effect-twinklesparkle-115095.mp3")
 #set up
 height = 790
 wight = 938
 Screen = pygame.display.set_mode ( (wight ,height) )
 clock = pygame.time.Clock()
 # tao nen 
-bg = pygame.image.load(r"C:\workspace\Python\plane-game\Images\Textures\stars_galaxy.jpg")
+bg = pygame.image.load(r".\Images\Textures\stars_galaxy.jpg")
 bg_pos = 0 
 # tao plane
-plane_surface = pygame.image.load( r"C:\workspace\Python\plane-game\Images\Objects\ship2.png")
+plane_surface = pygame.image.load( r".\Images\Objects\plane.png")
 plane_rect = plane_surface.get_rect( midbottom = ( wight // 2 , height - 20  ) )
 plane_movementx = 0 
 plane_movementy = 0 
 #tao rocket
-rocket_surface = pygame.image.load( r"C:\workspace\Python\plane-game\Images\Objects\ship_gray.png")
+rocket_surface = pygame.image.load( r".\Images\Objects\ufo.png")
 rocket_speed_event = pygame.USEREVENT + 1
 pygame.time.set_timer( rocket_speed_event , 5000 ) # cu moi 5s thi tang so luong rocket
 rocket_event = pygame.USEREVENT + 2
@@ -109,25 +109,25 @@ pygame.time.set_timer( rocket_event , rocket_speed )
 rocket_list = []
 rocket_pos = range( 10 , 930 )
 # tao bullet cho plane
-bullet_surface = pygame.image.load( r"C:\workspace\Python\plane-game\Images\Objects\bullet4.png")
+bullet_surface = pygame.image.load( r".\Images\Objects\bullet.png")
 bullet_speed = 300
-bullet_speed_max = 60
+bullet_speed_max = 90
 bullet_event = pygame.USEREVENT + 3
 pygame.time.set_timer( bullet_event , bullet_speed )
 bullet_list = [ ]
 # tao star
-star_surface = pygame.image.load ( r"C:\workspace\Python\plane-game\Images\Objects\star (1).png")
+star_surface = pygame.image.load ( r".\Images\Objects\star (1).png")
 star_list = []
 star_event = pygame.USEREVENT + 4 
 pygame.time.set_timer( star_event , 20000 )
 # check collision giua rocket va plane
 Active = True 
 # tao score
-game_font = pygame.font.Font(r"C:\workspace\Python\plane-game\04B_19.TTF", 40)
+game_font = pygame.font.Font(r".\04B_19.TTF", 40)
 score = 0 
 max_score = 0 
 # game over
-geme_over_surface = pygame.image.load ( r"C:\workspace\Python\plane-game\Images\Textures\game_over_PNG41 (1).png")
+geme_over_surface = pygame.image.load ( r".\Images\Textures\game_over_PNG41 (1).png")
 game_over_rect = geme_over_surface.get_rect( center = ( wight/2 , height/2 - 50 ) )
 while True:
     for event in pygame.event.get():
