@@ -1,4 +1,7 @@
 import pygame , sys , random ,os
+import cv2
+import mediapipe as mp
+import numpy as np
 pygame.mixer.pre_init(frequency=44100, size=-16, channels=2, buffer=512)
 pygame.init()
 pygame.display.set_caption( "Máy bay chiến đấu")
@@ -18,7 +21,7 @@ def draw_rocket( rocket_list ):
 def move_rocket( rocket_list ):
     for rocket_rect in rocket_list:
         if rocket_rect.centery <= height + 48 :
-            rocket_rect.centery += 4
+            rocket_rect.centery += 12
         else:
             rocket_list.remove( rocket_rect)
 def creat_bullet():
@@ -27,7 +30,7 @@ def creat_bullet():
 def move_bullet( bullet_list ):
     for bullet_rect in bullet_list :
         if bullet_rect.centery >= -20 :
-            bullet_rect.centery -= 5 
+            bullet_rect.centery -= 10 
         else :
             bullet_list.remove( bullet_rect )
 def draw_bullet( bullet_list ):
@@ -55,7 +58,7 @@ def creat_star():
 def move_star(star_list):
     for star_rect in star_list :
         if star_rect.centery < height - 20 :
-            star_rect.centery += 2 
+            star_rect.centery += 4 
         else:
             star_rect.centery = height - 20
 def draw_star( star_list ):
@@ -79,6 +82,31 @@ def drow_score2( ):
     max_score_rect = max_score_surface.get_rect( center = ( wight/2 , height/ 2 + 150 ) )
     Screen.blit( score_surface , score_rect )
     Screen.blit( max_score_surface , max_score_rect )
+
+def is_fist(hand_landmarks):
+    """ Kiểm tra xem bàn tay có nắm lại không. """
+    for i in [8, 12, 16, 20]:
+        if hand_landmarks.landmark[i].y < hand_landmarks.landmark[i - 2].y:
+            return False
+    return True
+
+def is_thumb_touching(hand_landmarks, finger_tip):
+    """ Kiểm tra xem ngón cái có chạm ngón chỉ định không. """
+    thumb_tip = hand_landmarks.landmark[mp_hands.HandLandmark.THUMB_TIP]
+    distance = ((thumb_tip.x - hand_landmarks.landmark[finger_tip].x) ** 2 + 
+                (thumb_tip.y - hand_landmarks.landmark[finger_tip].y) ** 2) ** 0.5
+    return distance < 0.05
+
+def is_palm_facing(hand_landmarks, direction="left"):
+    """ Kiểm tra xem lòng bàn tay hướng về phía nào. """
+    wrist = hand_landmarks.landmark[mp_hands.HandLandmark.WRIST]
+    thumb_cmc = hand_landmarks.landmark[mp_hands.HandLandmark.THUMB_CMC]
+    if direction == "left":
+        return wrist.x < thumb_cmc.x
+    elif direction == "right":
+        return wrist.x > thumb_cmc.x
+    return False
+
 # add sound 
 pygame.mixer.music.load( r".\.Sounds\Epic Hip Hop.mp3")
 pygame.mixer.music.play(-1 , 0 , 0 )
@@ -110,7 +138,7 @@ rocket_list = []
 rocket_pos = range( 10 , 930 )
 # tao bullet cho plane
 bullet_surface = pygame.image.load( r".\Images\Objects\bullet.png")
-bullet_speed = 300
+bullet_speed = 400
 bullet_speed_max = 90
 bullet_event = pygame.USEREVENT + 3
 pygame.time.set_timer( bullet_event , bullet_speed )
@@ -129,27 +157,93 @@ max_score = 0
 # game over
 geme_over_surface = pygame.image.load ( r".\Images\Textures\game_over_PNG41 (1).png")
 game_over_rect = geme_over_surface.get_rect( center = ( wight/2 , height/2 - 50 ) )
+# Khởi tạo Mediapipe
+mp_hands = mp.solutions.hands
+mp_drawing = mp.solutions.drawing_utils
+
+# Thiết lập các tùy chọn cho Mediapipe Hands
+hands = mp_hands.Hands(max_num_hands=1, min_detection_confidence=0.7, min_tracking_confidence=0.7)
+
+# Bắt đầu sử dụng camera
+cap = cv2.VideoCapture(0)
+
 while True:
+    ret, frame = cap.read()
+    frame = cv2.flip(frame, 1)  # Lật khung hình để thuận tiện hơn
+    rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+    # Xử lý hình ảnh
+    result = hands.process(rgb_frame)
+    move_direction = "Dung yen"
+    plane_movementx = 0
+    plane_movementy = 0
+
+    # Nếu phát hiện bàn tay
+    if result.multi_hand_landmarks:
+        for hand_landmarks in result.multi_hand_landmarks:
+            mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
+            landmarks = hand_landmarks.landmark
+
+            # Tọa độ của đầu ngón cái và ngón trỏ
+            thumb_tip = landmarks[mp_hands.HandLandmark.THUMB_TIP]
+            index_tip = landmarks[mp_hands.HandLandmark.INDEX_FINGER_TIP]
+            middle_tip = landmarks[mp_hands.HandLandmark.MIDDLE_FINGER_TIP]  # Đầu ngón giữa
+
+            # Chuyển đổi tọa độ từ tỷ lệ (0-1) sang pixel
+            h, w, _ = frame.shape
+            thumb_tip_x, thumb_tip_y = int(thumb_tip.x * w), int(thumb_tip.y * h)
+            index_tip_x, index_tip_y = int(index_tip.x * w), int(index_tip.y * h)
+            middle_tip_x, middle_tip_y = int(middle_tip.x * w), int(middle_tip.y * h)
+
+            # Vẽ điểm ở vị trí của các ngón tay
+            cv2.circle(frame, (index_tip_x, index_tip_y), 10, (0, 255, 0), -1)  # Ngón trỏ (màu xanh lá)
+            cv2.circle(frame, (thumb_tip_x, thumb_tip_y), 10, (0, 0, 255), -1)  # Ngón cái (màu đỏ)
+            cv2.circle(frame, (middle_tip_x, middle_tip_y), 10, (0, 255, 255), -1)  # Ngón giữa (màu vàng)
+
+            if is_fist(hand_landmarks):
+                plane_movementx = 0
+                plane_movementy = 0
+                move_direction = "Dung yen"
+            elif is_thumb_touching(hand_landmarks, mp_hands.HandLandmark.INDEX_FINGER_TIP):
+                plane_movementy = 14
+                move_direction = "Di xuong"
+            elif is_thumb_touching(hand_landmarks, mp_hands.HandLandmark.MIDDLE_FINGER_TIP):
+                plane_movementy = -14
+                move_direction = "Di len"
+            elif is_palm_facing(hand_landmarks, "right"):
+                plane_movementx = 14
+                move_direction = "Sang phai"
+            elif is_palm_facing(hand_landmarks, "left"):
+                plane_movementx = -14
+                move_direction = "Sang trai"
+
+            # Hiển thị cử chỉ trên màn hình
+            cv2.putText(frame, move_direction, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
+
+    # Hiển thị khung hình
+    cv2.imshow('Hand Tracking', frame)
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
         if event.type == pygame.KEYDOWN and Active :
             if event.key == pygame.K_LEFT or event.key == pygame.K_a :
-                plane_movementx = -7
+                plane_movementx = -14
             elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
-                plane_movementx = 7 
+                plane_movementx = 14 
             elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
-                plane_movementy = 7
+                plane_movementy = 14
             elif event.key == pygame.K_UP or event.key == pygame.K_w:
-                plane_movementy = -7
+                plane_movementy = -14
+
         if event.type == pygame.KEYDOWN and ( not Active ) :
             if event.key == pygame.K_SPACE:
                 Active = True
                 #xoa het rocket va bullet 
                 rocket_list.clear()
                 bullet_list.clear()
-                bullet_speed = 300
+                bullet_speed = 400
                 pygame.time.set_timer( bullet_event , bullet_speed )
                 # reset lai so luong ten lua va toc do ten lua
                 rocket_speed = 1000
@@ -176,7 +270,7 @@ while True:
         if event.type == star_event and len( star_list ) < 1 and bullet_speed > bullet_speed_max : 
             star_list.append( creat_star() )
     draw_bg()
-    bg_pos += 1 
+    bg_pos += 3 
     if bg_pos > 1668 :
         bg_pos = 0
     if Active:
@@ -214,3 +308,5 @@ while True:
         drow_score2()
     pygame.display.update()
     clock.tick( 120 )
+cap.release()
+cv2.destroyAllWindows()
